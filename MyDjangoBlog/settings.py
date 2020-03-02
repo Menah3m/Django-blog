@@ -37,8 +37,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'password_reset',
     'article',
     'userprofile',
+
 ]
 
 MIDDLEWARE = [
@@ -123,3 +125,18 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static"),
 )
+
+
+
+
+EMAIL_HOST = 'smtp.qq.com'
+
+EMAIL_HOST_USER = '568200065@qq.com'
+
+EMAIL_HOST_PASSWORD = 'vcnoemgyrpribfih'
+# 发送邮件的端口
+EMAIL_PORT = 465
+# 是否使用 TLS
+EMAIL_USE_TLS = True
+# 默认的发件人
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
