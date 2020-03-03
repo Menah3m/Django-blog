@@ -3,6 +3,7 @@ from .models import ArticlePost
 from django.http import HttpResponse
 from .forms import ArticlePostForm
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 import markdown
 
@@ -30,7 +31,7 @@ def article_detail(request, id):
     # 载入模板，并返回context对象
     return render(request, 'article/detail.html', context)
 
-
+@login_required(login_url='/userprofile/login/')
 def article_create(request):
     # 判断用户是否提交数据
     if request.method == "POST":
@@ -41,7 +42,7 @@ def article_create(request):
             # 保存数据，但暂时不提交到数据库
             new_article = article_post_form.save(commit=False)
             # 指定数据库中id=1的用户为作者
-            new_article.author = User.objects.get(id=1)
+            new_article.author = User.objects.get(id=request.user.id)
             # 将新文章保存到数据库
             new_article.save()
             # 完成后返回到文章列表
