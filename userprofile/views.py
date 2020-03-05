@@ -6,6 +6,7 @@ from django.contrib.auth import authenticate, login, logout
 from .models import Profile
 from .forms import ProfileForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 
 
 def user_login(request):
@@ -60,17 +61,26 @@ def user_register(request):
 @login_required(login_url='/userprofile/login/')
 def profile_edit(request, id):
     user = User.objects.get(id=id)
-    profile = Profile.objects.get(user_id=id)
+    if Profile.objects.filter(user_id=id).exists():
+        # user_id 是 OneToOneField 自动生成的字段
+        profile = Profile.objects.get(user_id=id)
+    else:
+        profile = Profile.objects.create(user=user)
 
     if request.method == 'POST':
         if request.user != user:
             return HttpResponse("你没有权限修改此用户信息")
 
-        profile_form = ProfileForm(data=request.POST)
+        profile_form = ProfileForm(request.POST, request.FILES)
+
         if profile_form.is_valid():
             profile_cd = profile_form.cleaned_data
             profile.phone = profile_cd['phone']
             profile.bio = profile_cd['bio']
+
+            if 'avatar' in request.FILES:
+                profile.avatar = profile_cd["avatar"]
+
             profile.save()
             return  redirect("userprofile:edit", id=id)
         else:
