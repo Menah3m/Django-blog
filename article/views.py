@@ -4,14 +4,20 @@ from django.http import HttpResponse
 from .forms import ArticlePostForm
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-
+from django.core.paginator import Paginator
 import markdown
 
 
 # 视图函数，用于从url映射文章列表
 def article_list(request):
     # 取出所有博客文章
-    articles = ArticlePost.objects.all()
+    articles_list = ArticlePost.objects.all()
+
+    # 每页显示1篇文章
+    paginator = Paginator(article_list, 1)
+    page = request.GET.get('page')
+    articles = paginator.get_page(page)
+
     # 需要传递给template的对象
     context = {'articles': articles}
     # render函数：载入模板，并返回context对象
