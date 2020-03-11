@@ -10,8 +10,13 @@ import markdown
 
 # 视图函数，用于从url映射文章列表
 def article_list(request):
-    # 取出所有博客文章
-    articles_list = ArticlePost.objects.all()
+    # 根据GET请求中查询条件返回对应顺序的对象数组
+    if request.GET.get('order') == 'total_views':
+        article_list = ArticlePost.objects.all().order_by('-total_views')
+        order = 'total_views'
+    else:
+        article_list = ArticlePost.objects.all()
+        order = 'normal'
 
     # 每页显示1篇文章
     paginator = Paginator(article_list, 1)
@@ -19,7 +24,7 @@ def article_list(request):
     articles = paginator.get_page(page)
 
     # 需要传递给template的对象
-    context = {'articles': articles}
+    context = {'articles': articles, 'order': order }
     # render函数：载入模板，并返回context对象
     return render(request, 'article/list.html', context)
 
