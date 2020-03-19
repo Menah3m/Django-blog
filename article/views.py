@@ -50,13 +50,17 @@ def article_detail(request, id):
     article = ArticlePost.objects.get(id=id)
     article.total_views += 1
     article.save(update_fields=['total_views'])
-    article.body = markdown.markdown(article.body,
-                                     extensions=[
+    md = markdown.Markdown(extensions=[
                                          'markdown.extensions.extra',
                                          'markdown.extensions.codehilite',
+                                         'markdown.extensions.toc',
                                      ])
+    article.body = md.convert(article.body)
+
+
+
     # 需要传递给模板的对象
-    context = {'article': article}
+    context = {'article': article, 'toc':md.toc }
     # 载入模板，并返回context对象
     return render(request, 'article/detail.html', context)
 
