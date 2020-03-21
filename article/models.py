@@ -27,4 +27,5 @@ class ArticlePost(models.Model):
     def __str__(self):
         # return self.title将文章标题返回
         return self.title
-
+    def get_absolute_url(self):
+        return reverse('article:article_detail', args=[self.id])
